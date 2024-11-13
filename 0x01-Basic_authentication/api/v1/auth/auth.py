@@ -14,7 +14,7 @@ class Auth:
         """ Require auth
         """
         return False
-    
+
     def authorization_header(self, request=None) -> str:
         """ Authorization header
         """
