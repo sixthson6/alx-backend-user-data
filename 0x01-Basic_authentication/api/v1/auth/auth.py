@@ -13,7 +13,11 @@ class Auth:
                      excluded_paths: List[str]) -> bool:
         """ Require auth
         """
-        return False
+        if path is None or excluded_paths is None or len(excluded_paths) == 0:
+            return True
+
+        path = path.rstrip("/")
+        return path not in [p.rstrip("/") for p in excluded_paths]
 
     def authorization_header(self, request=None) -> str:
         """ Authorization header
