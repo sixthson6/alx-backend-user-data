@@ -1,32 +1,46 @@
-#!/user/bin/env python3
-""" Authentication
-"""
-
-from flask import request
+#!/usr/bin/env python3
+""" Authentication module """
 from typing import List, TypeVar
 
 
 class Auth:
-    """Auth Class
+    """ Auth class
+        Defines methods to authenticate a request
+        Methods:
+            - require_auth
+            - authorization_header
+            - current_user
     """
-    def require_auth(self, path: str,
-                     excluded_paths: List[str]) -> bool:
-        """ Require auth
-        """
-        if path is None or excluded_paths is None or len(excluded_paths) == 0:
-            return True
 
-        path = path.rstrip("/")
-        return path not in [p.rstrip("/") for p in excluded_paths]
+    def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
+        """ require auth method
+            Args:
+                path: string. Path to check
+                excluded_paths: list of strings. Paths to exclude from auth
+                    May end with * to match prefix
+        """
+        if not path or not excluded_paths:
+            return True
+        if path[-1] != '/':
+            path += '/'
+        for p in excluded_paths:
+            if p[-1] == '*':
+                if path.startswith(p[:-1]):
+                    return False
+            elif path == p:
+                return False
+        return True
 
     def authorization_header(self, request=None) -> str:
-        """ Authorization header
+        """ authorization header method
+            Tests if 'Authorization' is in the header of the request
         """
         if request is None:
             return None
-        return request.header.get("Authorization") ir None
+        return request.headers.get('Authorization') or None
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """ Current User
+        """ current user method
+            Overloaded in child class BasicAuth
         """
         return None
